@@ -1,0 +1,32 @@
+{
+#include <stdio.h>
+}
+
+let digit = ['0'-'9']
+let lower = ['a'-'z']
+let upper = ['A'-'Z']
+let letter = lower | upper
+let alnum = letter | digit
+let id = letter (alnum | '_')*
+let ws = [' ' '\t' '\n']+
+let nonzero = digit # '0'
+let sign = ['+' '-']?
+let not_newline = _ # '\n'
+
+rule gettoken [lexbuf] =
+    ws { return lexbuf; }
+  | "if" { return IF; }
+  | sign digit+ { return INT; }
+  | id { return ID; }
+  | '{' { return LBRACE; }
+  | '}' { return RBRACE; }
+  | '[' { return LBRACKET; }
+  | ']' { return RBRACKET; }
+  | ',' { return COMMA; }
+  | ':' { return COLON; }
+  | [^ '0'-'9' 'a'-'z' 'A'-'Z' ' ' '\t' '\n'] { return SYMBOL; }
+  | eof { return EOF; }
+
+{
+/* trailer opcional: se inserta al final del archivo generado */
+}
