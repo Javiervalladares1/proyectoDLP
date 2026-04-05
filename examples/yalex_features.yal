@@ -8,7 +8,7 @@ let upper = ['A'-'Z']
 let letter = lower | upper
 let alnum = letter | digit
 let id = letter (alnum | '_')*
-let ws = [' ' '\t' '\n']+
+let ws = [' ' '\t' '\n' '\r']+
 let nonzero = digit # '0'
 let sign = ['+' '-']?
 let not_newline = _ # '\n'
@@ -24,7 +24,7 @@ rule gettoken [lexbuf] =
   | ']' { return RBRACKET; }
   | ',' { return COMMA; }
   | ':' { return COLON; }
-  | [^ '0'-'9' 'a'-'z' 'A'-'Z' ' ' '\t' '\n'] { return SYMBOL; }
+  | [^ '0'-'9' 'a'-'z' 'A'-'Z' ' ' '\t' '\n' '\r'] { return SYMBOL; }
   | eof { return EOF; }
 
 {

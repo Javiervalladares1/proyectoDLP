@@ -2,14 +2,23 @@ CC ?= cc
 CFLAGS ?= -std=c11 -O2 -Wall -Wextra -pedantic
 
 GEN := yalexgen
-GEN_SRC := src/yalexgen.c
+GEN_SRCS := \
+	src/main.c \
+	src/util.c \
+	src/charset.c \
+	src/ast.c \
+	src/yal_spec.c \
+	src/regex_parse.c \
+	src/nfa.c \
+	src/dfa.c \
+	src/emit.c
 
 .PHONY: all clean example example-ok example-error example-features verify
 
 all: $(GEN)
 
-$(GEN): $(GEN_SRC)
-	$(CC) $(CFLAGS) -o $@ $<
+$(GEN): $(GEN_SRCS)
+	$(CC) $(CFLAGS) -o $@ $(GEN_SRCS)
 
 clean:
 	rm -f $(GEN) lexer_generated lexer_generated.c regex_tree.dot

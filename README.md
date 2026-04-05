@@ -53,10 +53,23 @@ El lexer generado procesa un archivo de texto y muestra:
 
 ## 2. Arquitectura resumida
 
-Archivo principal: `src/yalexgen.c`
+Fuentes del generador (orden del pipeline léxico), en `src/`:
+
+| Paso | Archivos | Rol |
+|------|----------|-----|
+| Tipos | `yalex_types.h` | `YalSpec`, `AST`, `NFA`, `DFA`, etc. |
+| Utilidades | `util.c`, `util.h` | Memoria, E/S, `fatal`, `trim_copy` |
+| Conjuntos | `charset.c`, `charset.h` | Operaciones sobre `CharSet` |
+| AST | `ast.c`, `ast.h` | Nodos regex y `ast_eval_charset` |
+| Especificación `.yal` | `yal_spec.c`, `yal_spec.h` | `yal_strip_comments`, `parse_spec`, `find_let`, `free_spec` |
+| Regex | `regex_parse.c`, `regex_parse.h` | Parser de expresiones y `let` |
+| NFA | `nfa.c`, `nfa.h` | Construcción del autómata finito no determinista |
+| DFA | `dfa.c`, `dfa.h` | Subconjuntos y tabla de transiciones |
+| Emisión | `emit.c`, `emit.h` | DOT, PNG opcional, `lexer_generated.c` |
+| CLI | `main.c` | `main`, `usage` |
 
 Flujo:
-1. `read_file` + `strip_comments`
+1. `read_file` + `yal_strip_comments`
 2. `parse_spec` (`header`, `let`, `rule`, `trailer`)
 3. `parse_regex_with_lets` + expansión de `let`
 4. `build_nfa_from_ast`

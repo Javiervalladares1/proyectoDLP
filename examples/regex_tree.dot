@@ -5,7 +5,7 @@ digraph RegexTree {
   n1 [label="TOKEN SKIP"];
   n0 -> n1;
   n2 [label="+"];
-  n3 [label="set(0x09,0x0A,' ')"];
+  n3 [label="set(0x09,0x0A,0x0D,' ')"];
   n2 -> n3;
   n1 -> n2;
   n4 [label="TOKEN NUMBER"];
