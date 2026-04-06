@@ -1,0 +1,62 @@
+(* Versión equivalente para yalexgen (no sustituye a mediumYalex.yal del catedrático). *)
+
+{
+}
+
+let delim = [' ' '\t' '\n' '\r']
+let ws = delim+
+
+let letter = ['a'-'z' 'A'-'Z']
+let digit = ['0'-'9']
+let digits = digit+
+
+let id = letter (letter | digit)*
+
+let number = '-'? digits
+
+let string = '"' (letter | digit | ' ')+ '"'
+
+let tq = "\"" "\"" "\""
+let docstr = tq (letter | digit | ' ' | '\n' | '\r')+ tq
+
+let comentario = '#' (_ # '\n')*
+
+let if_kw = "if"
+let print_kw = "print"
+let kw_def = "def"
+let kw_return = "return"
+
+let igual = '='
+let suma = '+'
+let resta = '-'
+let mult = '*'
+let div = '/'
+let menor = '<'
+let mayor = '>'
+
+rule tokens =
+    docstr      { "COMENTARIO MULTILINEA" }
+  | if_kw       { "IF" }
+  | print_kw    { "PRINT" }
+  | kw_def      { "DEF" }
+  | kw_return   { "RETURN" }
+  | igual       { "ASIGNACION" }
+  | suma        { "SUMA" }
+  | resta       { "RESTA" }
+  | mult        { "MULTIPLICACION" }
+  | div         { "DIVISION" }
+  | menor       { "MENOR QUE" }
+  | mayor       { "MAYOR QUE" }
+  | ':'         { "DOS PUNTOS" }
+  | '('         { "PARENTESIS_IZQUIERDO" }
+  | ')'         { "PARENTESIS_DERECHO" }
+  | ','         { "COMA" }
+  | number      { "NUMERO" }
+  | id          { "IDENTIFICADOR" }
+  | string      { "STRING" }
+  | comentario  { "COMENTARIO" }
+  | ws          {}
+  | eof         { "EOF" }
+
+{
+}

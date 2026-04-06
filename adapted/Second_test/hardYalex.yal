@@ -1,0 +1,79 @@
+(* Versión equivalente para yalexgen (no sustituye a hardYalex.yal del catedrático). *)
+
+{
+}
+
+let delim = [' ' '\t' '\n' '\r']
+let ws = delim+
+let extraToken = ['.' '!' '?']
+
+let letter = ['a'-'z' 'A'-'Z']
+let digit = ['0'-'9']
+let digits = digit+
+
+let completeDigits = '-'? digits
+let number = completeDigits ',' digits
+
+let id = letter (letter | digit)*
+
+let string = '"' (letter | digit | ' ' | extraToken)+ '"'
+
+let tq = "\"" "\"" "\""
+
+let comentarioMultilinea = tq (letter | digit | ws | extraToken | '\n' | '\r')+ tq
+
+let comentario = '#' (_ # '\n')*
+
+let kw_if = "if"
+let kw_for = "for"
+let kw_while = "while"
+let kw_def = "def"
+let kw_or = "or"
+let kw_and = "and"
+let kw_not = "not"
+let kw_in = "in"
+let kw_return = "return"
+let kw_print = "print"
+
+let op_eqeq = '=' '='
+let op_ne = '!' '='
+let op_le = '<' '='
+let op_ge = '>' '='
+
+rule tokens =
+    comentarioMultilinea { "COMENTARIO MULTILINEA" }
+  | string               { "STRING" }
+  | kw_if                { "IF" }
+  | kw_for               { "FOR" }
+  | kw_while             { "WHILE" }
+  | kw_def               { "DEF" }
+  | kw_or                { "OR" }
+  | kw_and               { "AND" }
+  | kw_not               { "NOT" }
+  | kw_in                { "IN" }
+  | kw_return            { "RETURN" }
+  | kw_print             { "PRINT" }
+  | op_eqeq              { "COMPARACION" }
+  | op_ne                { "DIFERENTE" }
+  | op_le                { "MENOR IGUAL QUE" }
+  | op_ge                { "MAYOR IGUAL QUE" }
+  | '+'                  { "SUMA" }
+  | '-'                  { "RESTA" }
+  | '*'                  { "MULTIPLICACION" }
+  | '/'                  { "DIVISION" }
+  | '('                  { "PARENTESIS_IZQUIERDO" }
+  | ')'                  { "PARENTESIS_DERECHO" }
+  | '='                  { "ASIGNACION" }
+  | '<'                  { "MENOR QUE" }
+  | '>'                  { "MAYOR QUE" }
+  | ':'                  { "DOS PUNTOS" }
+  | ','                  { "COMA" }
+  | number               { "NUMERO CON DECIMAL" }
+  | completeDigits       { "DIGITO" }
+  | id                   { "IDENTIFICADOR" }
+  | comentario           { "COMENTARIO" }
+  | ws                   {}
+  | eof                  { "EOF" }
+
+{
+}

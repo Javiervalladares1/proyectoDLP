@@ -52,28 +52,104 @@ static int ci_match_word(const char *p, const char *w) {
     return 1;
 }
 
+static void skip_action_ws(const char **p) {
+    while (**p && isspace((unsigned char)**p)) {
+        (*p)++;
+    }
+}
+
+/* Action body `{ "token label" }` (cadena entre comillas, con escapes mínimos). */
+static char *parse_action_string_literal(const char **pp) {
+    const char *p = *pp;
+    size_t cap = 32;
+    size_t len = 0;
+    char *buf = (char *)xmalloc(cap);
+    if (*p != '"') {
+        free(buf);
+        return NULL;
+    }
+    p++;
+    while (*p && *p != '"') {
+        if (*p == '\\' && p[1]) {
+            p++;
+            switch (*p) {
+            case 'n':
+                buf[len++] = '\n';
+                break;
+            case 't':
+                buf[len++] = '\t';
+                break;
+            case 'r':
+                buf[len++] = '\r';
+                break;
+            case '\\':
+                buf[len++] = '\\';
+                break;
+            case '"':
+                buf[len++] = '"';
+                break;
+            default:
+                buf[len++] = *p;
+                break;
+            }
+            p++;
+        } else {
+            buf[len++] = *p++;
+        }
+        if (len + 2 >= cap) {
+            cap *= 2;
+            buf = (char *)xrealloc(buf, cap);
+        }
+    }
+    if (*p != '"') {
+        free(buf);
+        return NULL;
+    }
+    p++;
+    buf[len] = '\0';
+    *pp = p;
+    return buf;
+}
+
 char *infer_token_name(const char *action, int idx, int *skip_out) {
     const char *p = action;
+    const char *scan;
     *skip_out = 0;
-    while (*p) {
-        if (ci_match_word(p, "return")) {
-            p += 6;
-            while (*p && isspace((unsigned char)*p)) {
-                p++;
+    skip_action_ws(&p);
+    if (!*p) {
+        *skip_out = 1;
+        return xstrdup("SKIP");
+    }
+    if (*p == '"') {
+        char *label = parse_action_string_literal(&p);
+        if (label) {
+            skip_action_ws(&p);
+            if (!*p) {
+                return label;
             }
-            if (ci_match_word(p, "lexbuf")) {
+            free(label);
+        }
+    }
+    scan = action;
+    while (*scan) {
+        if (ci_match_word(scan, "return")) {
+            scan += 6;
+            while (*scan && isspace((unsigned char)*scan)) {
+                scan++;
+            }
+            if (ci_match_word(scan, "lexbuf")) {
                 *skip_out = 1;
                 return xstrdup("SKIP");
             }
-            if (is_ident_start_char((unsigned char)*p)) {
-                const char *s = p;
-                while (is_ident_char((unsigned char)*p)) {
-                    p++;
+            if (is_ident_start_char((unsigned char)*scan)) {
+                const char *s = scan;
+                while (is_ident_char((unsigned char)*scan)) {
+                    scan++;
                 }
-                return trim_copy(s, (size_t)(p - s));
+                return trim_copy(s, (size_t)(scan - s));
             }
         }
-        p++;
+        scan++;
     }
     {
         char name[64];
