@@ -144,7 +144,7 @@ make example-features
 make verify
 ```
 
-### Pruebas de laboratorio (catedrático)
+### Pruebas
 - **`first_test/`** y **`Second_test/`**: archivos **tal como los entregó el catedrático** (no deben alterarse para cumplir el enunciado). Incluyen los `.yal`, `input_grammar*.txt`, `test1.py` y `hardtest.py`.
 - **`adapted/`**: especificaciones **equivalentes** para este `yalexgen` (sintaxis distinta donde el dialecto del curso no coincide con el parser del proyecto). Ver `adapted/README.md`.
 
@@ -158,10 +158,3 @@ se generan lexers desde `adapted/` y se imprimen **los tokens** por sección (`=
 
 Artefactos generados (`.c`, binarios, `.dot`): solo bajo `adapted/` — `make clean-catedra`.
 
-## 7. Notas técnicas
-
-- El proyecto prioriza diseño académico defendible:
-  - separación clara de fases,
-  - autómatas finitos,
-  - evidencias de generación y ejecución.
-- La diferencia `#` está implementada sobre clases de caracteres (caso práctico más común en especificaciones YALex de laboratorio).
