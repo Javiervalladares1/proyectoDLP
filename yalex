@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
-set -eu
+#!/usr/bin/env python3
+from src_py.main import main
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec "$SCRIPT_DIR/yalexgen" "$@"
+if __name__ == "__main__":
+    raise SystemExit(main())
 

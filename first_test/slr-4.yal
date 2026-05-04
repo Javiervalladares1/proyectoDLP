@@ -1,29 +1,32 @@
-(* Lexer para Gramática No. 4 *)
+(* Versión equivalente para yalexgen (no sustituye al slr-4.yal del catedrático). *)
 
-(* Introducir cualquier header aqui *)
+{
+}
 
-let delim = [' ''\t''\n']
+let delim = [' ' '\t' '\n' '\r']
 let ws = delim+
-let letter = ['A'-'Z''a'-'z']
+let letter = ['A'-'Z' 'a'-'z']
 let str = ('_')*
 let digit = ['0'-'9']
 let digits = digit+
 let id = letter(letter|str|digit)*
-let number = digits('.'digits)?('E'['+''-']?digits)?
+let number = digits('.'digits)?('E'['+' '-']?digits)?
 
-rule tokens = 
-    ws          { return WHITESPACE }
-  | id        { return ID }               (* Cambie por una acción válida, que devuelva el token *)
-  | number    { return NUMBER }
-  | ';'       { return SEMICOLON }
-  | ":="      { return ASSIGNOP }
-  | '<'       { return LT }
-  | '='       { return EQ }
-  | '+'       { return PLUS }
-  | '-'       { return MINUS }
-  | '*'       { return TIMES }
-  | '/'       { return DIV }
-  | '('       { return LPAREN }
-  | ')'       { return RPAREN }
+rule tokens =
+    ws          { return lexbuf; }
+  | id          { return ID; }
+  | number      { return NUMBER; }
+  | ';'         { return SEMICOLON; }
+  | ":="        { return ASSIGNOP; }
+  | '<'         { return LT; }
+  | '='         { return EQ; }
+  | '+'         { return PLUS; }
+  | '-'         { return MINUS; }
+  | '*'         { return TIMES; }
+  | '/'         { return DIV; }
+  | '('         { return LPAREN; }
+  | ')'         { return RPAREN; }
+  | eof         { return EOF; }
 
-(* Introducir cualquier trailer aqui *)
+{
+}

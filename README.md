@@ -1,4 +1,4 @@
-# Generador de Analizadores Léxicos (YALex) en C
+# Generador de Analizadores Léxicos (YALex) en Python
 
 Proyecto para **Diseño de Lenguajes** que implementa un generador estilo YALex:
 
@@ -6,7 +6,7 @@ Proyecto para **Diseño de Lenguajes** que implementa un generador estilo YALex:
 2. Construye representación intermedia de regex.
 3. Genera autómatas (NFA → DFA).
 4. Emite:
-   - `lexer_generated.c` (analizador léxico generado).
+   - `lexer_generated.py` (analizador léxico generado).
    - `regex_tree.dot` y `regex_tree.png` (árbol de expresiones regular).
 
 El lexer generado procesa un archivo de texto y muestra:
@@ -38,7 +38,7 @@ El lexer generado procesa un archivo de texto y muestra:
   - empate por orden de definición: `OK`
 - Salidas requeridas:
   - Árbol de expresión graficado: `OK` (`.dot` y `.png`)
-  - Programa fuente del lexer: `OK` (`lexer_generated.c`)
+  - Programa fuente del lexer: `OK` (`lexer_generated.py`)
 
 ### B) Analizador generado
 - Entrada de texto plano: `OK`
@@ -53,20 +53,20 @@ El lexer generado procesa un archivo de texto y muestra:
 
 ## 2. Arquitectura resumida
 
-Fuentes del generador (orden del pipeline léxico), en `src/`:
+Fuentes del generador (orden del pipeline léxico), en `src_py/`:
 
 | Paso | Archivos | Rol |
 |------|----------|-----|
-| Tipos | `yalex_types.h` | `YalSpec`, `AST`, `NFA`, `DFA`, etc. |
-| Utilidades | `util.c`, `util.h` | Memoria, E/S, `fatal`, `trim_copy` |
-| Conjuntos | `charset.c`, `charset.h` | Operaciones sobre `CharSet` |
-| AST | `ast.c`, `ast.h` | Nodos regex y `ast_eval_charset` |
-| Especificación `.yal` | `yal_spec.c`, `yal_spec.h` | `yal_strip_comments`, `parse_spec`, `find_let`, `free_spec` |
-| Regex | `regex_parse.c`, `regex_parse.h` | Parser de expresiones y `let` |
-| NFA | `nfa.c`, `nfa.h` | Construcción del autómata finito no determinista |
-| DFA | `dfa.c`, `dfa.h` | Subconjuntos y tabla de transiciones |
-| Emisión | `emit.c`, `emit.h` | DOT, PNG opcional, `lexer_generated.c` |
-| CLI | `main.c` | `main`, `usage` |
+| Tipos | `yalex_types.py` | `YalSpec`, `AST`, `NFA`, `DFA`, etc. |
+| Utilidades | `util.py` | E/S, `fatal`, `trim_copy` |
+| Conjuntos | `charset.py` | Operaciones sobre `CharSet` |
+| AST | `ast.py` | Nodos regex y `ast_eval_charset` |
+| Especificación `.yal` | `yal_spec.py` | `yal_strip_comments`, `parse_spec`, `find_let` |
+| Regex | `regex_parse.py` | Parser de expresiones y `let` |
+| NFA | `nfa.py` | Construcción del autómata finito no determinista |
+| DFA | `dfa.py` | Subconjuntos y tabla de transiciones |
+| Emisión | `emit.py` | DOT, PNG opcional, `lexer_generated.py` |
+| CLI | `main.py` | `run`, `usage` vía `argparse` |
 
 Flujo:
 1. `read_file` + `yal_strip_comments`
@@ -82,39 +82,37 @@ Estructuras clave:
 - `AST` (tipos regex)
 - `NFA`, `DFA`
 
-## 3. Compilación
+## 3. Ejecución
+
+No requiere compilación en C. Solo Python 3:
 
 ```bash
-make
+python yalexgen archivo.yal -o lexer_generated.py
 ```
-
-Genera ejecutable:
-- `yalexgen`
 
 ## 4. Uso del generador
 
 ```bash
-./yalexgen archivo.yal -o lexer_generated.c --dot regex_tree.dot
+python yalexgen archivo.yal -o lexer_generated.py --dot regex_tree.dot
 ```
 
 También se incluye wrapper compatible con la llamada esperada del documento:
 
 ```bash
-./yalex archivo.yal -o lexer_generated.c
+python yalex archivo.yal -o lexer_generated.py
 ```
 
 Opciones:
-- `-o <ruta>`: salida del lexer C (default: `lexer_generated.c`)
+- `-o <ruta>`: salida del lexer Python (default: `lexer_generated.py`)
 - `--dot <ruta>`: salida DOT del árbol regex (default: `regex_tree.dot`)
 - `--no-png`: desactiva generación automática de PNG
 
 Si `dot` (Graphviz) está disponible, también se genera `regex_tree.png`.
 
-## 5. Compilar y ejecutar lexer generado
+## 5. Ejecutar lexer generado
 
 ```bash
-cc -std=c11 -O2 -Wall -Wextra -pedantic -o lexer_generated lexer_generated.c
-./lexer_generated entrada.txt
+python lexer_generated.py entrada.txt
 ```
 
 ## 6. Ejemplos incluidos
@@ -144,17 +142,17 @@ make example-features
 make verify
 ```
 
-### Pruebas
-- **`first_test/`** y **`Second_test/`**: archivos **tal como los entregó el catedrático** (no deben alterarse para cumplir el enunciado). Incluyen los `.yal`, `input_grammar*.txt`, `test1.py` y `hardtest.py`.
-- **`adapted/`**: especificaciones **equivalentes** para este `yalexgen` (sintaxis distinta donde el dialecto del curso no coincide con el parser del proyecto). Ver `adapted/README.md`.
+### Pruebas (cátedra)
+- **`first_test/`** y **`Second_test/`** concentran especificaciones `.yal`, las entradas de prueba (`input_grammar*.txt`, `test1.py`, `hardtest.py`) y, al correr las pruebas, los lexers generados (`lexer_*.py`) y `.dot` asociados.
+- Si el enunciado pide usar el archivo YALex **literal** del PDF del curso, puede haber diferencias de dialecto respecto al parser de este proyecto (comillas, `\s`, nombres de `let`, UTF-8 en clases de caracteres, etc.). Las `.yal` en estas carpetas están escritas para lo que **entendemos** este `yalexgen` y pueden no coincidir byte a byte con el original.
 
-Las **entradas** de las pruebas siguen siendo las de `first_test/` y `Second_test/`. Al ejecutar:
+Al ejecutar:
 
 ```bash
 make test-catedra
 ```
 
-se generan lexers desde `adapted/` y se imprimen **los tokens** por sección (`==========`).
+se generan los lexers en las mismas carpetas y se imprimen **los tokens** por sección (`==========`).
 
-Artefactos generados (`.c`, binarios, `.dot`): solo bajo `adapted/` — `make clean-catedra`.
+Artefactos generados (`.py`, `.dot`) de esas pruebas: `make clean-catedra`.
 

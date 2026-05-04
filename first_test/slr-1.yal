@@ -1,19 +1,22 @@
-(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
+(* Versión equivalente para yalexgen (no sustituye al slr-1.yal del catedrático). *)
 
-{header}
+{
+}
 
-let delim = [' ''\t''\n']
+let delim = [' ' '\t' '\n' '\r']
 let ws = delim+
-let letter = ['A'-'Z''a'-'z']
+let letter = ['A'-'Z' 'a'-'z']
 let digit = ['0'-'9']
 let id = letter(letter|digit)*
 
 rule tokens =
-    ws        { return WHITESPACE }
-  | id        { return ID }               (* Cambie por una acción válida, que devuelva el token *)
-  | '+'       { return PLUS }
-  | '*'       { return TIMES }
-  | '('       { return LPAREN }
-  | ')'       { return RPAREN }
+    ws        { return lexbuf; }
+  | id        { return ID; }
+  | '+'       { return PLUS; }
+  | '*'       { return TIMES; }
+  | '('       { return LPAREN; }
+  | ')'       { return RPAREN; }
+  | eof       { return EOF; }
 
-{trailer}
+{
+}

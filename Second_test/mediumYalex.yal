@@ -1,30 +1,31 @@
-(* Sección opcional de encabezado *)
+(* Versión equivalente para yalexgen (no sustituye a mediumYalex.yal del catedrático). *)
 
-(* Definición de delimitadores y espacios en blanco *)
-let delim = [' ''\t''\n']
+{
+}
+
+let delim = [' ' '\t' '\n' '\r']
 let ws = delim+
 
-(* Letras y dígitos *)
-let letter = ['a'-'z''A'-'Z']
+let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
 let digits = digit+
 
-(* Identificadores: inician con letra, pueden contener letras y dígitos *)
 let id = letter (letter | digit)*
 
-(* Números enteros *)
 let number = '-'? digits
 
-(* Cadenas entre comillas dobles, sin escapes *)
-let string = '"' (letter | digit | ' ')* '"'
+let string = '"' (letter | digit | ' ')+ '"'
 
-(* Comentario de una línea tipo Python *)
-let comentario = '#' (letter | digit | ' ')*
+let tq = "\"" "\"" "\""
+let docstr = tq (letter | digit | ' ' | '\n' | '\r')+ tq
 
-(* Palabras clave *)
-let if_kw = if
+let comentario = '#' (_ # '\n')*
 
-(* Operadores *)
+let if_kw = "if"
+let print_kw = "print"
+let kw_def = "def"
+let kw_return = "return"
+
 let igual = '='
 let suma = '+'
 let resta = '-'
@@ -33,19 +34,29 @@ let div = '/'
 let menor = '<'
 let mayor = '>'
 
-(* Reglas *)
 rule tokens =
-    if_kw { "IF" }
-    | print_kw { "PRINT" }
-    | igual { "ASIGNACION" }
-    | suma { "SUMA" }
-    | resta { "RESTA" }
-    | mult { "MULTIPLICACION" }
-    | div { "DIVISION" }
-    | menor { "MENOR QUE" }
-    | mayor { "MAYOR QUE" }
-    | number { "NUMERO" }
-    | id { "IDENTIFICADOR" }
-    | string { "STRING" }
-    | comentario { "COMENTARIO" }
-    | ws {}
+    docstr      { "COMENTARIO MULTILINEA" }
+  | if_kw       { "IF" }
+  | print_kw    { "PRINT" }
+  | kw_def      { "DEF" }
+  | kw_return   { "RETURN" }
+  | igual       { "ASIGNACION" }
+  | suma        { "SUMA" }
+  | resta       { "RESTA" }
+  | mult        { "MULTIPLICACION" }
+  | div         { "DIVISION" }
+  | menor       { "MENOR QUE" }
+  | mayor       { "MAYOR QUE" }
+  | ':'         { "DOS PUNTOS" }
+  | '('         { "PARENTESIS_IZQUIERDO" }
+  | ')'         { "PARENTESIS_DERECHO" }
+  | ','         { "COMA" }
+  | number      { "NUMERO" }
+  | id          { "IDENTIFICADOR" }
+  | string      { "STRING" }
+  | comentario  { "COMENTARIO" }
+  | ws          {}
+  | eof         { "EOF" }
+
+{
+}

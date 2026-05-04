@@ -1,24 +1,27 @@
-(* Lexer para Gramática No. 2 - Expresiones aritméticas extendidas *)
+(* Versión equivalente para yalexgen (no sustituye al slr-2.yal del catedrático). *)
 
-(* Introducir cualquier header aqui *)
+{
+}
 
-let delim = ['\s''\t''\n']
+let delim = [' ' '\t' '\n' '\r']
 let ws = delim+
-let letter = ['A'-'Z''a'-'z']
+let letter = ['A'-'Z' 'a'-'z']
 let digit = ['0'-'9']
 let digits = digit+
 let id = letter(letter|digit)*
-let number = digits('.'digits)?('E'['+''-']?digits)?
+let number = digits('.'digits)?('E'['+' '-']?digits)?
 
 rule tokens =
-    ws        { return WHITESPACE }               (* Cambie por una acción válida, que devuelva el token *)
-  | id        { return ID }
-  | number    { return NUMBER }
-  | '+'       { return PLUS }
-  | '-'       { return MINUS }
-  | '*'       { return TIMES }
-  | '/'       { return DIV }
-  | '('       { return LPAREN }
-  | ')'       { return RPAREN }
+    ws        { return lexbuf; }
+  | id        { return ID; }
+  | number    { return NUMBER; }
+  | '+'       { return PLUS; }
+  | '-'       { return MINUS; }
+  | '*'       { return TIMES; }
+  | '/'       { return DIV; }
+  | '('       { return LPAREN; }
+  | ')'       { return RPAREN; }
+  | eof       { return EOF; }
 
-(* Introducir cualquier trailer aqui *)
+{
+}
